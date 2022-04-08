@@ -1,0 +1,42 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_boost (0.0.2):
+    - Flutter
+  - FlutterPluginRegistrant (0.0.1):
+    - Flutter
+    - flutter_boost
+  - mymodule (0.0.1):
+    - Flutter
+  - SnapKit (5.0.1)
+
+DEPENDENCIES:
+  - Flutter (from `../mymodule/.ios/Flutter/engine`)
+  - flutter_boost (from `../mymodule/.ios/.symlinks/plugins/flutter_boost/ios`)
+  - FlutterPluginRegistrant (from `../mymodule/.ios/Flutter/FlutterPluginRegistrant`)
+  - mymodule (from `../mymodule/.ios/Flutter`)
+  - SnapKit
+
+SPEC REPOS:
+  trunk:
+    - SnapKit
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: "../mymodule/.ios/Flutter/engine"
+  flutter_boost:
+    :path: "../mymodule/.ios/.symlinks/plugins/flutter_boost/ios"
+  FlutterPluginRegistrant:
+    :path: "../mymodule/.ios/Flutter/FlutterPluginRegistrant"
+  mymodule:
+    :path: "../mymodule/.ios/Flutter"
+
+SPEC CHECKSUMS:
+  Flutter: bdfa2e8fe0e2880a2c6a58a0b1a8675c262a07af
+  flutter_boost: 6a73c54e5654df180c2cc379045b8cba9746fc8a
+  FlutterPluginRegistrant: 03a06fa5f754c611bb6c96f42acf9432e8c4515d
+  mymodule: 2580aed9157ed1df6b842e7f4cf5bb843ec59311
+  SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+
+PODFILE CHECKSUM: 65bf144dd867fe700f5f0a56ecb1451dcfd357de
+
+COCOAPODS: 1.11.2

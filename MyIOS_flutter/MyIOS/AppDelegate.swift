@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  MyIOS
-//
-//  Created by wangkun42 on 2022/4/7.
-//
-
 import UIKit
 
 @main

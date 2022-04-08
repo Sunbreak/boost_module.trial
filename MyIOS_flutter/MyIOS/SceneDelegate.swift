@@ -6,17 +6,30 @@
 //
 
 import UIKit
+import flutter_boost
+
+typealias ResultCallback = (Dictionary<AnyHashable, Any>) -> Void
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
+    var navigation: UINavigationController {
+        get {
+            return self.window!.rootViewController as! UINavigationController
+        }
+    }
+    
+    var resultTable = Dictionary<String, ResultCallback>()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        FlutterBoost.instance().setup(UIApplication.shared, delegate: self) { _ in }
+
+        self.window = UIWindow(windowScene: scene as! UIWindowScene)
+        self.window!.makeKeyAndVisible()
+
+        let main = ViewController()
+        self.window!.rootViewController = UINavigationController(rootViewController: main)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -50,3 +63,56 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+// MARK: FlutterBoostDelegate
+
+extension SceneDelegate: FlutterBoostDelegate {
+    func pushNativeRoute(_ pageName: String!, arguments: [AnyHashable : Any]!) {
+        var target: UIViewController!
+        if pageName == "main" {
+            target = UIViewController()
+        }
+
+        let isAnimated = arguments["isAnimated"] as? Bool ?? false
+        if arguments["isPresent"] as? Bool ?? false {
+            self.navigation.present(target, animated: isAnimated, completion: nil)
+        } else {
+            self.navigation.pushViewController(target, animated: isAnimated)
+        }
+    }
+    
+    func pushFlutterRoute(_ options: FlutterBoostRouteOptions!) {
+        let boostContainer = FBFlutterViewContainer()!
+        boostContainer.setName(options.pageName, uniqueId: options.uniqueId, params: options.arguments, opaque: options.opaque)
+
+        self.resultTable[options.pageName] = options.onPageFinished
+
+        self.navigation.isNavigationBarHidden = true
+        let isAnimated = options.arguments["isAnimated"] as? Bool ?? false
+        if options.arguments["isPresent"] as? Bool ?? false || !options.opaque {
+            self.navigation.present(boostContainer, animated: isAnimated, completion: nil)
+        } else {
+            self.navigation.pushViewController(boostContainer, animated: isAnimated)
+        }
+    }
+    
+    func popRoute(_ options: FlutterBoostRouteOptions!) {
+        let presented = self.navigation.presentedViewController
+        if let boostContainer = presented as? FBFlutterViewContainer, boostContainer.uniqueId() == options.uniqueId {
+            if boostContainer.modalPresentationStyle == .fullScreen {
+                self.navigation.topViewController!.beginAppearanceTransition(true, animated: false)
+                boostContainer.dismiss(animated: true) {
+                    self.navigation.topViewController!.endAppearanceTransition()
+                }
+            } else {
+                boostContainer.dismiss(animated: true, completion: nil)
+            }
+        } else {
+            self.navigation.popViewController(animated: true)
+        }
+
+        if let callback = self.resultTable[options.pageName] {
+            callback(options.arguments)
+            self.resultTable[options.pageName] = nil
+        }
+    }
+}
