@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/flutter_boost.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
-void main() {
+import 'sentry_config.dart';
+
+Future<void> main() async {
   CustomFlutterBinding();
-  runApp(App());
+  await SentryFlutter.init(
+    (options) => options.dsn = appDSN,
+    appRunner: () {
+      runApp(App());
+    },
+  );
 }
 
 class CustomFlutterBinding extends WidgetsFlutterBinding with BoostFlutterBinding {}
