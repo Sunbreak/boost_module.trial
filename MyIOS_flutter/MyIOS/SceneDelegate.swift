@@ -89,9 +89,12 @@ extension SceneDelegate: FlutterBoostDelegate {
         self.navigation.isNavigationBarHidden = true
         let isAnimated = options.arguments["isAnimated"] as? Bool ?? false
         if options.arguments["isPresent"] as? Bool ?? false || !options.opaque {
-            self.navigation.present(boostContainer, animated: isAnimated, completion: nil)
+            self.navigation.present(boostContainer, animated: isAnimated) {
+                options.completion(true)
+            }
         } else {
             self.navigation.pushViewController(boostContainer, animated: isAnimated)
+            options.completion(true)
         }
     }
     
@@ -104,10 +107,13 @@ extension SceneDelegate: FlutterBoostDelegate {
                     self.navigation.topViewController!.endAppearanceTransition()
                 }
             } else {
-                boostContainer.dismiss(animated: true, completion: nil)
+                boostContainer.dismiss(animated: true) {
+                    options.completion(true)
+                }
             }
         } else {
             self.navigation.popViewController(animated: true)
+            options.completion(true)
         }
 
         if let callback = self.resultTable[options.pageName] {
